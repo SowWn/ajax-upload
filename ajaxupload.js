@@ -115,7 +115,8 @@
      */
     function getBox(el){
         var left, right, top, bottom;
-        var offset = getOffset(el);
+
+	var offset = (window.jQuery) ? jQuery(el).position() : getOffset(el);
         left = offset.left;
         top = offset.top;
         
@@ -283,6 +284,15 @@
             button = document.getElementById(button);
         }
         
+	// support buttons in JQuery UI Dialogs
+	this._parentDailog = document.body;
+	if (window.jQuery && jQuery.ui && jQuery.ui.dialog){
+	    var parentDialog = jQuery(button).parents('.ui-dialog');
+	    if (parentDialog.length){
+		this._parentDialog = jQuery(button).parent().get(0);
+	    }
+	}
+
         if ( ! button || button.nodeType !== 1){
             throw new Error("Please make sure that you're passing a valid element"); 
         }
@@ -423,8 +433,9 @@
 
             });   
                         
-	        div.appendChild(input);
-            document.body.appendChild(div);
+	    div.appendChild(input);
+	    this._parentDialog.appendChild(div);
+            //document.body.appendChild(div);
               
             this._input = input;
         },
